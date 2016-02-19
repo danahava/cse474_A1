@@ -158,7 +158,17 @@ def nnPredict(w1,w2,data):
     
     labels = np.array([])
     #Your code here
-    
+    """1. Turn data into a vector of data built from the matrix (see flatten image & np.vstack())
+          ? What is the size of each component (28x28)
+       2. Do a feed forward propagation but at the end DO NOT do a sigmoid function do a thresholded
+          function to test data
+          a) compute the net_p of each hidden node by: a_j = sum(i=1 to d+1)w_ji^1 x_i
+          b) compute the value of each hidden node sigmoid(a_j)
+          c) include a bias node z_m+1 = 1 into hidden layer
+          d) compute the net_p of each otput node by b_l = sum(j=1 to m+1)w_lj^2 z_j
+          e) compute the value of each output node sigmoid(b_l)
+       3. Predict labels
+          a) how is this done"""
     return labels
     
 
