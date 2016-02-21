@@ -58,18 +58,61 @@ def preprocess():
      - normalize the data to [0, 1]
      - feature selection"""
     
-    mat = loadmat('mnist_all.mat') #loads the MAT object as a Dictionary
-    
-    #Pick a reasonable size for validation data
-    
-    
-    #Your code here
-    train_data = np.array([])
-    train_label = np.array([])
-    validation_data = np.array([])
-    validation_label = np.array([])
-    test_data = np.array([])
-    test_label = np.array([])
+    #Loads the MAT object as a Dictionary
+    mat = loadmat('mnist_all.mat')
+
+    #'Constant' declaration
+    TEST_DATA_SIZE = 50000
+    DATA_FEATURE = 28*28
+
+    #Initialize vectors
+    train_data = np.empty([0, DATA_FEATURE])
+    train_label = np.empty([0, 1])
+
+    validation_data = np.empty([])
+    validation_label = np.empty([])
+
+    test_data = np.empty([0, DATA_FEATURE])
+    test_label = np.empty([0, 1])
+
+    for num in range(10):
+        #Stack training data and label
+        data = mat.get('train' + str(num))
+        label = np.zeros( (data.shape[0], 1) )
+        label += num
+        train_data = np.vstack( (train_data, data) )
+        train_label = np.vstack( (train_label, label) )
+
+        #Stack testing data and label
+        data = mat.get('test' + str(num))
+        label = np.zeros( (data.shape[0], 1) )
+        label += num
+        test_data = np.vstack( (test_data, data) )
+        test_label = np.vstack( (test_label, label) )
+
+    #Normalize training and testing data to [0,1]
+    train_data /= 255
+    test_data /= 255
+
+    #Feature selection - remove column that has same value in all its entries
+    selection = (train_data == train_data[0, :])
+    selection = np.all(selection, axis=0) #axis = vertical
+
+    for col in range(DATA_FEATURE-1, -1, -1):
+        if selection[col]:
+            train_data = np.delete(train_data, col, 1)
+
+    #Split training data into training and validation
+    perm = np.random.permutation(range(train_data.shape[0]))
+    validation_data = train_data[ perm[TEST_DATA_SIZE:], :]
+    validation_label = train_label[ perm[TEST_DATA_SIZE:], :]
+
+    train_data = train_data[ perm[0: TEST_DATA_SIZE], :]
+    train_label = train_label[ perm[0: TEST_DATA_SIZE], :]
+
+    #print("Valid: %s, %s" % (validation_data.shape, validation_label.shape))
+    #print("Train: %s, %s" % (train_data.shape, train_label.shape))
+    #print("Test: %s, %s" % (test_data.shape, test_label.shape))
     
     return train_data, train_label, validation_data, validation_label, test_data, test_label
     
