@@ -77,21 +77,21 @@ def preprocess():
 
     for num in range(10):
         #Stack training data and label
-        data = mat.get('train' + str(num))
-        label = np.zeros( (data.shape[0], 1) )
-        label += num
-        train_data = np.vstack( (train_data, data) )
-        train_label = np.vstack( (train_label, label) )
+        data = mat.get('train' + str(num))               # This is getting the training data from the matlab script (shouldn't this be 50000 NOT 10?)
+        label = np.zeros( (data.shape[0], 1) )           # creates an array of zeros with rows: data.shape[0](number of rows in data) and columns: 1
+        label += num                                     #""" why add to the array the numbers 1-10?"""
+        train_data = np.vstack( (train_data, data) )     #"""isn't train_data empty?"""
+        train_label = np.vstack( (train_label, label) )  #"""aren't these empty"""
 
         #Stack testing data and label
-        data = mat.get('test' + str(num))
+        data = mat.get('test' + str(num))                #"""But there are more than 10 test data sets""" 
         label = np.zeros( (data.shape[0], 1) )
         label += num
-        test_data = np.vstack( (test_data, data) )
-        test_label = np.vstack( (test_label, label) )
+        test_data = np.vstack( (test_data, data) )       #"""see above"""
+        test_label = np.vstack( (test_label, label) )    #"""see above"""
 
     #Normalize training and testing data to [0,1]
-    train_data /= 255
+    train_data /= 255                                    #"""How is this normalizing? Should these be mode (%)"""
     test_data /= 255
 
     #Feature selection - remove column that has same value in all its entries
@@ -110,9 +110,9 @@ def preprocess():
     train_data = train_data[ perm[0: TEST_DATA_SIZE], :]
     train_label = train_label[ perm[0: TEST_DATA_SIZE], :]
 
-    #print("Valid: %s, %s" % (validation_data.shape, validation_label.shape))
-    #print("Train: %s, %s" % (train_data.shape, train_label.shape))
-    #print("Test: %s, %s" % (test_data.shape, test_label.shape))
+    print("Valid: %s, %s" % (validation_data.shape, validation_label.shape))
+    print("Train: %s, %s" % (train_data.shape, train_label.shape))
+    print("Test: %s, %s" % (test_data.shape, test_label.shape))
     
     return train_data, train_label, validation_data, validation_label, test_data, test_label
     
@@ -188,11 +188,11 @@ def nnPredict(w1,w2,data):
 
     % Input:
     % w1: matrix of weights of connections from input layer to hidden layers.
-    %     w1(i, j) represents the weight of connection from unit i in input 
+    %     w1(i, j) represents the weight of connection from unit i in input         #for every hidden layer node we want to go down the column 
     %     layer to unit j in hidden layer.
     % w2: matrix of weights of connections from hidden layer to output layers.
-    %     w2(i, j) represents the weight of connection from unit i in input 
-    %     layer to unit j in hidden layer.
+    %     w2(i, j) represents the weight of connection from unit i in hidden        #for every output layer node we want to go down the column 
+    %     layer to unit j in output layer.
     % data: matrix of data. Each row of this matrix represents the feature 
     %       vector of a particular image
        
@@ -212,6 +212,20 @@ def nnPredict(w1,w2,data):
           e) compute the value of each output node sigmoid(b_l)
        3. Predict labels
           a) how is this done"""
+"""The following is from HW 3 and can surve as a guide"""
+
+#for j in range(0,len(h)):
+#    sum = 0
+#    for i in range(0,len(x)):
+#        sum = sum + W_1[j,i]*x[i]
+#    h[j] = sigmoid(sum)
+#    print "h[" + str(j) + "]: " + str(h[j])
+#sum = 0
+#for l in range(0,len(h)):
+#    sum = sum + W_2[l] * h[l]
+#o = sigmoid(sum)
+#print "o: " + str(o)
+
     return labels
     
 
