@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.io import loadmat
 from math import sqrt
-
+from time import strftime
 
 def initializeWeights(n_in,n_out):
     """
@@ -77,21 +77,21 @@ def preprocess():
 
     for num in range(10):
         #Stack training data and label
-        data = mat.get('train' + str(num))               # This is getting the training data from the matlab script (shouldn't this be 50000 NOT 10?)
-        label = np.zeros( (data.shape[0], 1) )           # creates an array of zeros with rows: data.shape[0](number of rows in data) and columns: 1
-        label += num                                     #""" why add to the array the numbers 1-10?"""
-        train_data = np.vstack( (train_data, data) )     #"""isn't train_data empty?"""
-        train_label = np.vstack( (train_label, label) )  #"""aren't these empty"""
+        data = mat.get('train' + str(num))               
+        label = np.zeros( (data.shape[0], 1) )           
+        label += num   
+        train_data = np.vstack( (train_data, data) )		
+        train_label = np.vstack( (train_label, label) )  
 
         #Stack testing data and label
-        data = mat.get('test' + str(num))                #"""But there are more than 10 test data sets""" 
+        data = mat.get('test' + str(num))                
         label = np.zeros( (data.shape[0], 1) )
         label += num
-        test_data = np.vstack( (test_data, data) )       #"""see above"""
-        test_label = np.vstack( (test_label, label) )    #"""see above"""
+        test_data = np.vstack( (test_data, data) )       
+        test_label = np.vstack( (test_label, label) )   
 
     #Normalize training and testing data to [0,1]
-    train_data /= 255                                    #"""How is this normalizing? Should these be mode (%)"""
+    train_data /= 255                                    
     test_data /= 255
 
     #Feature selection - remove column that has same value in all its entries
@@ -111,9 +111,9 @@ def preprocess():
     train_data = train_data[ perm[0: TEST_DATA_SIZE], :]
     train_label = train_label[ perm[0: TEST_DATA_SIZE], :]
 
-    print("Valid: %s, %s" % (validation_data.shape, validation_label.shape))
-    print("Train: %s, %s" % (train_data.shape, train_label.shape))
-    print("Test: %s, %s" % (test_data.shape, test_label.shape))
+    #print("Valid: %s, %s" % (validation_data.shape, validation_label.shape))
+    #print("Train: %s, %s" % (train_data.shape, train_label.shape))
+    #print("Test: %s, %s" % (test_data.shape, test_label.shape))
     
     return train_data, train_label, validation_data, validation_label, test_data, test_label
     
@@ -164,17 +164,18 @@ def nnObjFunction(params, *args):
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0  
     
+	#BEGIN FEED FORWARD PROCESS:
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
     #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
-    training_data = np.c_[training_data, np.ones(training_data.shape[0])] # adding a column of one to data
+    training_data = np.c_[training_data, np.ones(training_data.shape[0])]
     a = training_data.dot(np.transpose(w1))
     z = sigmoid(a)
 
     ######################################################################################################################
     #z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
     #So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values
-    z = np.c_[z, np.ones(z.shape[0])] # adding a column of one to data
+    z = np.c_[z, np.ones(z.shape[0])]
     net_p = z.dot(np.transpose(w2))
     o = sigmoid(net_p)
 
@@ -183,27 +184,24 @@ def nnObjFunction(params, *args):
     # The first set of for loops determines the error of the weights associated with the output layer
     # Error between hidden and output
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
-
-    delta_l = np.zeros((o.shape[1], z.shape[1]))
-    J_2 = np.zeros((o.shape[1], z.shape[1])) # this should be a matrix of l*j where l is the length of the output vector and j is the length of the hidden vector 
+    J_2 = np.zeros((o.shape[1], z.shape[1]))	# A matrix of l*j where l is the length of the output vector and j is the length of the hidden vector 
     for input in range(0, o.shape[0]):
 	    truth_label = np.zeros((o.shape[0], o.shape[1]))
-		truth_label[input, train_label[l]] = 1
-		
+		truth_label[input, int(train_label[input])] = 1
     delta_l = (truth_label - o) * (1 - o) * o
-    grad_w2 = (((np.transpose(delta_l)).dot(z))/o.shape[0]) + lambdaval*w2
+    grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/o.shape[0]) + lambdaval*w2
     
     #####################################################################################################################
     # The second set of for loops determines the error of the weights associated with the hidden layer
     # Error for weights between hidden and input
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
     """This still needs to be defined"""
-#    J_1 = 
+    #J_1 =
+	grad_w1 = np.empty((n_hidden, (n_input+1)))
 
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
-    #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
-    obj_grad = np.array([])
+    obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
     
     return (obj_val,obj_grad)
 
@@ -229,9 +227,9 @@ def nnPredict(w1,w2,data):
     #####################################################################################################################
     #A vector to hold the assigned labels for each input given in the data matrix (column vector with each row corresponding to the same input matrix row
     labels = np.empty([data.shape[0], 1])
-#    print ("w1: "  + str(w1.shape))
-#    print ("w2: " + str(w2.shape))
-#    print ("data: " + str(data.shape))
+	#print ("w1: "  + str(w1.shape))
+	#print ("w2: " + str(w2.shape))
+	#print ("data: " + str(data.shape))
 
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
@@ -259,6 +257,7 @@ def nnPredict(w1,w2,data):
 
 """**************Neural Network Script Starts here********************************"""
 
+print('Start Time: ' + strftime("%Y-%m-%d %H:%M:%S"))
 train_data, train_label, validation_data,validation_label, test_data, test_label = preprocess();
 
 
@@ -269,21 +268,20 @@ n_input = train_data.shape[1];
 
 # set the number of nodes in hidden unit (not including bias unit)
 n_hidden = 50;
-				   
+ 
 # set the number of nodes in output unit
 n_class = 10;				   
+
+# set the regularization hyper-parameter
+lambdaval = 0;
 
 # initialize the weights into some random matrices
 initial_w1 = initializeWeights(n_input, n_hidden);
 initial_w2 = initializeWeights(n_hidden, n_class);
 
+
 # unroll 2 weight matrices into single column vector
 initialWeights = np.concatenate((initial_w1.flatten(), initial_w2.flatten()),0)
-
-# set the regularization hyper-parameter
-lambdaval = 0;
-
-nnPredict(initial_w1, initial_w2, train_data)
 
 args = (n_input, n_hidden, n_class, train_data, train_label, lambdaval)
 
@@ -305,21 +303,16 @@ w2 = nn_params.x[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
 
 #Test the computed parameters
 
-predicted_label = nnPredict(w1,w2,train_data)
-
 #find the accuracy on Training Dataset
-
+predicted_label = nnPredict(w1,w2,train_data)
 print('\n Training set Accuracy:' + str(100*np.mean((predicted_label == train_label).astype(float))) + '%')
 
-predicted_label = nnPredict(w1,w2,validation_data)
-
 #find the accuracy on Validation Dataset
-
+predicted_label = nnPredict(w1,w2,validation_data)
 print('\n Validation set Accuracy:' + str(100*np.mean((predicted_label == validation_label).astype(float))) + '%')
 
-
-predicted_label = nnPredict(w1,w2,test_data)
-
 #find the accuracy on Validation Dataset
+predicted_label = nnPredict(w1,w2,test_data)
+print('\n Test set Accuracy:' + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
 
-print('\n Test set Accuracy:' + + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
+print('\nEnd Time: ' + strftime("%Y-%m-%d %H:%M:%S"))
