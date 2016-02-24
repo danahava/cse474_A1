@@ -163,59 +163,39 @@ def nnObjFunction(params, *args):
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0  
     
-    #Your code here
-    #RESHAPE PARAMS VECTOR INTO WEIGHT MATRICES:
-    ####################################################################################################################
-    size = n_input * n_hidden
-    w1_array = np.split(params, [: size]) # splits the params vector in 2 and saves part associated with w1 in array
-    w2_array = np.split(params, [size :]) # splits the params vector in 2 and saves part associated with w2 in array
-    w1 = w1_array.reshape((n_input, n_hidden)) # turns the array split above into a matrix with n_input rows and n_hidden columns
-    w2 = w2_array.reshape((n_hidden, n_class)) # turns the array split above into a matrix with n_hidden rows and n_class columns
-
-    #FEED FORWARD PROCESS:
     #####################################################################################################################
-    #training_data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
-    #So, we will compute the dot product of training_data.w(1), then apply the sigmoid function to each of the calculated values
-    a = data.dot(w1)
+    #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
+    #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
+    training_data = np.c_[training_data, np.ones(training_data.shape[0])] # adding a column of one to data
+    a = training_data.dot(np.transpose(w1))
     z = sigmoid(a)
 
     ######################################################################################################################
     #z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
     #So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values
-    net_p = z.dot(w2)
-    o = sigmoid(net_p)
+    z = np.c_[z, np.ones(z.shape[0])] # adding a column of one to data
+    o = z.dot(np.transpose(w2))
+    y = sigmoid(o)
 
     #BEGIN BACK PROPOGATION:
     #####################################################################################################################
     # The first set of for loops determines the error of the weights associated with the output layer
     # Error between hidden and output
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
-    delta_l = np.zeros(1, len(o))
-    J_2 = np.zeros(len(o), len(z)) # this should be a matrix of l*j where l is the length of the output vector and j is the length of the hidden vector 
+    delta_l = np.zeros(1, o.shape[0])
+    J_2 = np.zeros(o.shape[0], shape[0]) # this should be a matrix of l*j where l is the length of the output vector and j is the length of the hidden vector 
     for l in range(0, len(truth_label)):
-        delta_l = (truth_label[l] - o[l]) * (1 - o[l]) * o[l]
         for j in range(0, len(z)):
-            J_2[l][j] = -lambda * delta_l[l] * z[j]
+            delta_l = (training_label[l] - o[l]) * (1 - o[l]) * o[l] # these need to be looked at closer
+            J_2[l][j] = -lambdaaval * delta_l[l] * z[j]
         
     #####################################################################################################################
     # The second set of for loops determines the error of the weights associated with the hidden layer
     # Error for weights between hidden and input
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
     """This still needs to be defined"""
-    J_1 = 
+#    J_1 = 
 
-    #####################################################################################################################
-    # update the new weights
-    # NOTE: lambda was directly incorporated into the calculation for error (J)
-    for i in range(0, w1.shape[0]):
-        for j in range(0, w1.shape[1]):
-            w1[i][j] = w[i][j] - J_1[i][j]
-
-    for j in range(0,w2.shape[0]):
-        for l in range(0, w2,shape[1]):
-            w2[j][l] = w[j][l] - J_2[j][l]
-    
-    
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
     #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
@@ -245,18 +225,21 @@ def nnPredict(w1,w2,data):
     #####################################################################################################################
     #A vector to hold the assigned labels for each input given in the data matrix (column vector with each row corresponding to the same input matrix row
     labels = np.empty([data.shape[0], 1])
-
+#    print ("w1: "  + str(w1.shape))
+#    print ("w2: " + str(w2.shape))
+#    print ("data: " + str(data.shape))
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
     #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
-
-    a = data.dot(w1)
+    data = np.c_[data, np.ones(data.shape[0])] # adding a column of one to data
+    a = data.dot(np.transpose(w1))
     z = sigmoid(a)
 
     ######################################################################################################################
     #z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
     #So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values
-    o = z.dot(w2)
+    z = np.c_[z, np.ones(z.shape[0])] # adding a column of one to data
+    o = z.dot(np.transpose(w2))
     y = sigmoid(o)
     
     ########################################################################################################################
@@ -267,7 +250,6 @@ def nnPredict(w1,w2,data):
 
     return labels
     
-
 
 
 """**************Neural Network Script Starts here********************************"""
@@ -296,6 +278,7 @@ initialWeights = np.concatenate((initial_w1.flatten(), initial_w2.flatten()),0)
 # set the regularization hyper-parameter
 lambdaval = 0;
 
+nnPredict(initial_w1, initial_w2, train_data)
 
 args = (n_input, n_hidden, n_class, train_data, train_label, lambdaval)
 
