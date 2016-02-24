@@ -164,14 +164,6 @@ def nnObjFunction(params, *args):
     obj_val = 0  
     
     #Your code here
-    #RESHAPE PARAMS VECTOR INTO WEIGHT MATRICES:
-    ####################################################################################################################
-    size = n_input * n_hidden
-    w1_array = np.split(params, [: size]) # splits the params vector in 2 and saves part associated with w1 in array
-    w2_array = np.split(params, [size :]) # splits the params vector in 2 and saves part associated with w2 in array
-    w1 = w1_array.reshape((n_input, n_hidden)) # turns the array split above into a matrix with n_input rows and n_hidden columns
-    w2 = w2_array.reshape((n_hidden, n_class)) # turns the array split above into a matrix with n_hidden rows and n_class columns
-
     #FEED FORWARD PROCESS:
     #####################################################################################################################
     #training_data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
@@ -190,11 +182,14 @@ def nnObjFunction(params, *args):
     # The first set of for loops determines the error of the weights associated with the output layer
     # Error between hidden and output
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
-    delta_l = np.zeros(1, len(o))
-    J_2 = np.zeros(len(o), len(z)) # this should be a matrix of l*j where l is the length of the output vector and j is the length of the hidden vector 
-    for l in range(0, len(truth_label)):
-        delta_l = (truth_label[l] - o[l]) * (1 - o[l]) * o[l]
-        for j in range(0, len(z)):
+    delta_l = np.zeros((o.shape[1], z.shape[1]))
+    J_2 = np.zeros((o.shape[1], z.shape[1])) # this should be a matrix of l*j where l is the length of the output vector and j is the length of the hidden vector 
+    for l in range(0, o.shape[0]):
+	    truth_label = np.zeros((o.shape[0], o.shape[1]))
+		truth_label[l, train_label[l]] = 1
+		
+    delta_l = (truth_label - o) * (1 - o) * o
+    for j in range(0, z.shape[1]):
             J_2[l][j] = -lambda * delta_l[l] * z[j]
         
     #####################################################################################################################
@@ -204,17 +199,6 @@ def nnObjFunction(params, *args):
     """This still needs to be defined"""
     J_1 = 
 
-    #####################################################################################################################
-    # update the new weights
-    # NOTE: lambda was directly incorporated into the calculation for error (J)
-    for i in range(0, w1.shape[0]):
-        for j in range(0, w1.shape[1]):
-            w1[i][j] = w[i][j] - J_1[i][j]
-
-    for j in range(0,w2.shape[0]):
-        for l in range(0, w2,shape[1]):
-            w2[j][l] = w[j][l] - J_2[j][l]
-    
     
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
