@@ -201,31 +201,19 @@ def nnPredict(w1,w2,data):
     
     labels = np.array([])
     #Your code here
-    """1. Turn data into a vector of data built from the matrix (see flatten image & np.vstack())
-          ? What is the size of each component (28x28)
-       2. Do a feed forward propagation but at the end DO NOT do a sigmoid function do a thresholded
-          function to test data
-          a) compute the net_p of each hidden node by: a_j = sum(i=1 to d+1)w_ji^1 x_i
-          b) compute the value of each hidden node sigmoid(a_j)
-          c) include a bias node z_m+1 = 1 into hidden layer
-          d) compute the net_p of each otput node by b_l = sum(j=1 to m+1)w_lj^2 z_j
-          e) compute the value of each output node sigmoid(b_l)
-       3. Predict labels
-          a) how is this done"""
-"""The following is from HW 3 and can surve as a guide"""
+    """data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
+    So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated valuesu"""
 
-#for j in range(0,len(h)):
-#    sum = 0
-#    for i in range(0,len(x)):
-#        sum = sum + W_1[j,i]*x[i]
-#    h[j] = sigmoid(sum)
-#    print "h[" + str(j) + "]: " + str(h[j])
-#sum = 0
-#for l in range(0,len(h)):
-#    sum = sum + W_2[l] * h[l]
-#o = sigmoid(sum)
-#print "o: " + str(o)
-
+    a = data.dot(w1)
+    z = sigmoid(a)
+    """z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
+    So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values"""
+    o = z.dot(w2)
+    y = sigmoid(o)
+    """To chose which number (label) a given output vector is assigned we need to determine the maximum output value of each output
+    vector that maximum value is the label assigned to the corresponding input """ 
+    # I do not know if this is correct... where do I get the labels from to assign?
+    labels = y.max(1)
     return labels
     
 
