@@ -12,24 +12,19 @@ def initializeWeights(n_in,n_out):
     # Input:
     # n_in: number of nodes of the input layer
     # n_out: number of nodes of the output layer
-       
+
     # Output: 
     # W: matrix of random initial weights with size (n_out x (n_in + 1))"""
-    
+
     epsilon = sqrt(6) / sqrt(n_in + n_out + 1);
     W = (np.random.rand(n_out, n_in + 1)*2* epsilon) - epsilon;
     return W
-    
-    
-    
+
 def sigmoid(z):
-    
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
-    
+
     return  1 / (1 + np.exp(-z))
-    
-    
 
 def preprocess():
     """ Input:
@@ -57,7 +52,7 @@ def preprocess():
            function
      - normalize the data to [0, 1]
      - feature selection"""
-    
+
     #Loads the MAT object as a Dictionary
     mat = loadmat('mnist_all.mat')
 
@@ -77,7 +72,7 @@ def preprocess():
 
     for num in range(10):
         #Stack training data and label
-        data = mat.get('train' + str(num))               
+        data = mat.get('train' + str(num))
         label = np.zeros( (data.shape[0], 1) )           
         label += num   
         train_data = np.vstack( (train_data, data) )		
@@ -102,7 +97,7 @@ def preprocess():
         if selection[col]:
             train_data = np.delete(train_data, col, 1)
 			test_data = np.delete(test_data), col, 1)
-			
+
     #Split training data into training and validation
     perm = np.random.permutation(range(train_data.shape[0]))
     validation_data = train_data[ perm[TEST_DATA_SIZE:], :]
@@ -114,11 +109,8 @@ def preprocess():
     #print("Valid: %s, %s" % (validation_data.shape, validation_label.shape))
     #print("Train: %s, %s" % (train_data.shape, train_label.shape))
     #print("Test: %s, %s" % (test_data.shape, test_label.shape))
-    
+
     return train_data, train_label, validation_data, validation_label, test_data, test_label
-    
-    
-    
 
 def nnObjFunction(params, *args):
     """% nnObjFunction computes the value of objective function (negative log 
@@ -141,7 +133,7 @@ def nnObjFunction(params, *args):
     %     in the vector represents the truth label of its corresponding image.
     % lambda: regularization hyper-parameter. This value is used for fixing the # Directly incorporate lambda into the error function
     %     overfitting problem.
-       
+
     % Output: 
     % obj_val: a scalar value representing value of error function
     % obj_grad: a SINGLE vector of gradient value of error function
@@ -159,12 +151,12 @@ def nnObjFunction(params, *args):
     %     layer to unit i in output layer."""
 
     n_input, n_hidden, n_class, training_data, training_label, lambdaval = args
-    
+
     w1 = params[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0  
-    
-	#BEGIN FEED FORWARD PROCESS:
+
+    #BEGIN FEED FORWARD PROCESS:
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
     #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
@@ -190,7 +182,7 @@ def nnObjFunction(params, *args):
 		truth_label[input, int(train_label[input])] = 1
     delta_l = (truth_label - o) * (1 - o) * o
     grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/o.shape[0]) + lambdaval*w2
-    
+
     #####################################################################################################################
     # The second set of for loops determines the error of the weights associated with the hidden layer
     # Error for weights between hidden and input
@@ -202,10 +194,8 @@ def nnObjFunction(params, *args):
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
     obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
-    
+
     return (obj_val,obj_grad)
-
-
 
 def nnPredict(w1,w2,data):
     """% nnPredict predicts the label of data given the parameter w1, w2 of Neural
@@ -220,7 +210,7 @@ def nnPredict(w1,w2,data):
     %     layer to unit j in output layer.
     % data: matrix of data. Each row of this matrix represents the feature 
     %       vector of a particular image
-       
+
     % Output: 
     % label: a column vector of predicted labels""" 
 
@@ -244,7 +234,7 @@ def nnPredict(w1,w2,data):
     z = np.c_[z, np.ones(z.shape[0])] # adding a column of one to data
     o = z.dot(np.transpose(w2))
     y = sigmoid(o)
-    
+
     ########################################################################################################################
     #To chose which number (label) a given output vector is assigned we need to determine the maximum output value of each output
     #vector the index of that maximum value is the label assigned to the corresponding input 
@@ -252,15 +242,11 @@ def nnPredict(w1,w2,data):
         labels[index] = np.argmax(y[index])
 
     return labels
-    
-
 
 """**************Neural Network Script Starts here********************************"""
 
 print('Start Time: ' + strftime("%Y-%m-%d %H:%M:%S"))
 train_data, train_label, validation_data,validation_label, test_data, test_label = preprocess();
-
-
 #  Train Neural Network
 
 # set the number of nodes in input unit (not including bias unit)
@@ -268,9 +254,9 @@ n_input = train_data.shape[1];
 
 # set the number of nodes in hidden unit (not including bias unit)
 n_hidden = 50;
- 
+
 # set the number of nodes in output unit
-n_class = 10;				   
+n_class = 10;				
 
 # set the regularization hyper-parameter
 lambdaval = 0;
@@ -278,7 +264,6 @@ lambdaval = 0;
 # initialize the weights into some random matrices
 initial_w1 = initializeWeights(n_input, n_hidden);
 initial_w2 = initializeWeights(n_hidden, n_class);
-
 
 # unroll 2 weight matrices into single column vector
 initialWeights = np.concatenate((initial_w1.flatten(), initial_w2.flatten()),0)
@@ -295,11 +280,9 @@ nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='
 #and nnObjGradient. Check documentation for this function before you proceed.
 #nn_params, cost = fmin_cg(nnObjFunctionVal, initialWeights, nnObjGradient,args = args, maxiter = 50)
 
-
 #Reshape nnParams from 1D vector into w1 and w2 matrices
 w1 = nn_params.x[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
 w2 = nn_params.x[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
-
 
 #Test the computed parameters
 
