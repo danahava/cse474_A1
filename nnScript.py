@@ -182,7 +182,6 @@ def nnObjFunction(params, *args):
 
 
 def nnPredict(w1,w2,data):
-    
     """% nnPredict predicts the label of data given the parameter w1, w2 of Neural
     % Network.
 
@@ -198,22 +197,30 @@ def nnPredict(w1,w2,data):
        
     % Output: 
     % label: a column vector of predicted labels""" 
-    
-    labels = np.array([])
-    #Your code here
-    """data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
-    So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated valuesu"""
+
+    #####################################################################################################################
+    #A vector to hold the assigned labels for each input given in the data matrix (column vector with each row corresponding to the same input matrix row
+    labels = np.empty([data.shape[0], 1])
+
+    #####################################################################################################################
+    #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
+    #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
 
     a = data.dot(w1)
     z = sigmoid(a)
-    """z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
-    So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values"""
+
+    ######################################################################################################################
+    #z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
+    #So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values
     o = z.dot(w2)
     y = sigmoid(o)
-    """To chose which number (label) a given output vector is assigned we need to determine the maximum output value of each output
-    vector that maximum value is the label assigned to the corresponding input """ 
-    # I do not know if this is correct... where do I get the labels from to assign?
-    labels = y.max(1)
+    
+    ########################################################################################################################
+    #To chose which number (label) a given output vector is assigned we need to determine the maximum output value of each output
+    #vector the index of that maximum value is the label assigned to the corresponding input 
+    for index in range(0,y.shape[0]):
+        labels[index] = np.argmax(y[index])
+
     return labels
     
 
