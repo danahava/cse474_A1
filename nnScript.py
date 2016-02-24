@@ -96,7 +96,7 @@ def preprocess():
     for col in range(DATA_FEATURE-1, -1, -1):
         if selection[col]:
             train_data = np.delete(train_data, col, 1)
-			test_data = np.delete(test_data), col, 1)
+            test_data = np.delete(test_data, col, 1)
 
     #Split training data into training and validation
     perm = np.random.permutation(range(train_data.shape[0]))
@@ -176,12 +176,12 @@ def nnObjFunction(params, *args):
     # The first set of for loops determines the error of the weights associated with the output layer
     # Error between hidden and output
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
-    J_2 = np.zeros((o.shape[1], z.shape[1]))	# A matrix of l*j where l is the length of the output vector and j is the length of the hidden vector 
-    for input in range(0, o.shape[0]):
-	    truth_label = np.zeros((o.shape[0], o.shape[1]))
-		truth_label[input, int(train_label[input])] = 1
-    delta_l = (truth_label - o) * (1 - o) * o
-    grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/o.shape[0]) + lambdaval*w2
+#    J_2 = np.zeros(w2.shape[0], w2.shape[1])
+#    for l in range(0, o.shape[0]):
+
+#        delta_l = (training_label[l] - o[l]) * (1 - o[l]) * o[l]
+
+#        grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/o.shape[0]) + lambdaval*w2
 
     #####################################################################################################################
     # The second set of for loops determines the error of the weights associated with the hidden layer
@@ -189,7 +189,7 @@ def nnObjFunction(params, *args):
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
     """This still needs to be defined"""
     #J_1 =
-	grad_w1 = np.empty((n_hidden, (n_input+1)))
+#	grad_w1 = np.empty((n_hidden, (n_input+1)))
 
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
@@ -250,10 +250,12 @@ train_data, train_label, validation_data,validation_label, test_data, test_label
 #  Train Neural Network
 
 # set the number of nodes in input unit (not including bias unit)
-n_input = train_data.shape[1]; 
+#n_input = train_data.shape[1]; 
+n_input = 500;
 
 # set the number of nodes in hidden unit (not including bias unit)
-n_hidden = 50;
+#n_hidden = 50;
+n_hidden = 4;
 
 # set the number of nodes in output unit
 n_class = 10;				
