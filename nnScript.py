@@ -156,6 +156,41 @@ def nnObjFunction(params, *args):
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0  
 
+
+    """  Value of Error Function to use as output obj_var  """
+
+    # Total Error for entire training set given by equation
+    # 1   n   1   k               2
+    # -  SUM  -  SUM (Y   -  O  )               (6 FROM PROJECT DESCRIPTION)
+    # n  p=1  2  l=1   pl     pl
+    #
+    # where
+    # n = n_input+1         (total input plus 1 for bias)
+    # k = 10                (digits 0-9)
+    # Ypl = training_label  (lth target value)
+    # Opl = training_data   (output at lth node for pth example)
+    #
+    # For Regularization add to above equation
+    # lambda   m   d+1      2     k   m+1       2
+    # ------ (SUM  SUM (w1 )  +  SUM  SUM (W2  ) )      (COMBINE WITH 6 TO GET 15 IN PROJECT DESCRIPTION)
+    #   2n    j=1  i=1   ji      l=1  j=1    lj
+    #
+    # where
+    # n = n_input+1
+    # m = n_hidden+1    (number nodes in hidden layer plus bias)
+    # d+1 = n_input+1   (number of inputs plus bias)
+    # w1ji = w1 at jith position
+    # k = 10            (digits 0-9)
+    # m+1 = n_hidden+1  (noded in hidden layer plus bias)
+    #
+    # adding results from these two equations using these variables should give us the output
+    # to return for obj_val
+
+    """ ************************************************** """
+
+
+
+
     #BEGIN FEED FORWARD PROCESS:
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
@@ -190,6 +225,32 @@ def nnObjFunction(params, *args):
     """This still needs to be defined"""
     #J_1 =
 #	grad_w1 = np.empty((n_hidden, (n_input+1)))
+
+    """ Gradient of Error function to use for output obj_grad  """
+
+    # Derivative of error function with respect to weight to get gradient
+    #              k
+    # -(1-z )z  ( SUM delta  w2  ) x        (12 FROM PROJECT DESCRIPTION)
+    #      j  j   l=1      l   lj   i
+    #
+    # where
+    # z = sigmoid(aj)   (sigmoid at jth position, like feed forward)
+    # k = 10            (digits 0-9)
+    # delta = delta l   (from back prop above)
+    # w2 = w2
+    # x = input         (at ith position)
+    #
+    # using derivative of error function can calculate gradient of error
+    #    1  n
+    # =  - SUM  Gradient for each pth node   (13 FROM PROJECT DESCRIPTION)
+    #    n p=1
+    #
+    # where n = n_input     (number inputs)
+    #
+    # Summing gradients of each node will give us vector to use for obj_grad output
+
+    """ ******************************************************** """
+
 
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
