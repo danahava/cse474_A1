@@ -57,8 +57,8 @@ def preprocess():
     mat = loadmat('mnist_all.mat')
 
     #'Constant' declaration
-#    TEST_DATA_SIZE = 50000 Forze this to change to smaller test size
-    TEST_DATA_SIZE = 500
+    TEST_DATA_SIZE = 50000 
+#    TEST_DATA_SIZE = 500
     DATA_FEATURE = 28*28
 
     #Initialize vectors
@@ -314,12 +314,12 @@ train_data, train_label, validation_data,validation_label, test_data, test_label
 #  Train Neural Network
 
 # set the number of nodes in input unit (not including bias unit)
-#n_input = train_data.shape[1]; 
-n_input = 500;
+n_input = train_data.shape[1]; 
+#n_input = 500;
 
 # set the number of nodes in hidden unit (not including bias unit)
-#n_hidden = 50;
-n_hidden = 4;
+n_hidden = 50;
+#n_hidden = 4;
 
 # set the number of nodes in output unit
 n_class = 10;				
