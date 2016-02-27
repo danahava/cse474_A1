@@ -57,7 +57,8 @@ def preprocess():
     mat = loadmat('mnist_all.mat')
 
     #'Constant' declaration
-    TEST_DATA_SIZE = 50000
+#    TEST_DATA_SIZE = 50000 Forze this to change to smaller test size
+    TEST_DATA_SIZE = 500
     DATA_FEATURE = 28*28
 
     #Initialize vectors
@@ -196,6 +197,8 @@ def nnObjFunction(params, *args):
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
     #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
     training_data = np.c_[training_data, np.ones(training_data.shape[0])]
+    print ("training_data: " + str(training_data.shape))
+    print ("w1: " + str(w1.shape))
     a = training_data.dot(np.transpose(w1))
     z = sigmoid(a)
 
