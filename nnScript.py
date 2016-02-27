@@ -214,6 +214,21 @@ def nnObjFunction(params, *args):
     # The first set of for loops determines the error of the weights associated with the output layer
     # Error between hidden and output
     # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
+
+	###Gradient of w2###
+    truth_label = np.zeros((o.shape[0], o.shape[1]))
+    for input in range(0, training_data.shape[0]):
+            truth_label[input, int(train_label[input])] = 1
+
+    delta_l = (truth_label - o) * (1 - o) * o
+    grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/train_data.shape[0])
+    regul_w2 = (lambdaval/(2*training_data.shape[0]))*(w2 ** 2)
+    grad_w2 += regul_w2
+
+    ###Error value###
+    obj_val = np.sum((truth_label - o) ** 2)
+    obj_val /= (2*training_data.shape[0])
+
 #    J_2 = np.zeros(w2.shape[0], w2.shape[1])
 #    for l in range(0, o.shape[0]):
 
