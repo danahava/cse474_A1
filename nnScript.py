@@ -16,15 +16,15 @@ def initializeWeights(n_in,n_out):
     # Output: 
     # W: matrix of random initial weights with size (n_out x (n_in + 1))"""
 
-    epsilon = sqrt(6) / sqrt(n_in + n_out + 1);
-    W = (np.random.rand(n_out, n_in + 1)*2* epsilon) - epsilon;
+    epsilon = sqrt(6) / sqrt(n_in + n_out + 1.0);
+    W = (np.random.rand(n_out, n_in + 1.0) * 2.0 * epsilon) - epsilon;
     return W
 
 def sigmoid(z):
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
 
-    return  1 / (1 + np.exp(-z))
+    return  1.0 / (1.0 + np.exp(-z))
 
 def preprocess():
     """ Input:
@@ -162,9 +162,7 @@ def nnObjFunction(params, *args):
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
     #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
-    train_data = np.c_[train_data, np.ones(train_data.shape[0])]
-    print ("train_data: " + str(train_data.shape))
-    print ("w1: " + str(w1.shape))
+    training_data = np.c_[training_data, np.ones(training_data.shape[0])]
     a = train_data.dot(np.transpose(w1))
     z = sigmoid(a)
 
@@ -172,10 +170,9 @@ def nnObjFunction(params, *args):
     #z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
     #So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values
     z = np.c_[z, np.ones(z.shape[0])]
-    print ("z: " + str(z.shape))
     net_p = z.dot(np.transpose(w2))
     o = sigmoid(net_p)
-    print ("o: " + str(o.shape))
+
     #BEGIN BACK PROPOGATION:
     #####################################################################################################################
     # The first set of for loops determines the error of the weights associated with the output layer
@@ -184,26 +181,28 @@ def nnObjFunction(params, *args):
 
 	###Gradient of w2###
     truth_label = np.zeros((o.shape[0], o.shape[1]))
-    for input in range(0, train_data.shape[0]):
+    for input in range(0, training_data.shape[0]):
             truth_label[input, int(train_label[input])] = 1.0
-
     delta_l = (truth_label - o) * (1.0 - o) * o
-    grad_w2 = (-1.0*((np.transpose(delta_l)).dot(z))
+    J_2 = -(np.transpose(delta_l).dot(z))
+    ### Equation 16 ####
+    grad_w2 = (np.add((lambdaval * w_2), J_2)) / training_data.shape[0]
 
        ###Gradient of w1###
     #sum.shape = 60000 x j
-    sum = delta_l.dot(w2)
-    print ("sum: " + str(sum.shape))
+    sum_w1 = delta_l.dot(w2)
+    print ("sum: " + str(sum_w1.shape))
     step1 = -(1.0 - z)
     step2 = step1 * z
-    step3 = sum * step2
-    grad_w1 = (np.transpose(step3).train_data)
+    step3 = sum_w1 * step2
+    J_1 = (np.transpose(step3[:, 0:n_hidden]).dot(training_data))
+    grad_w1 = (np.add((lambdaval * w_1), J_1)) / training_data.shape[0]
 
     ###Equation 15###
                
     Eqn6 = np.sum((truth_label - o) ** 2)
-    Eqn6 /= (2*train_data.shape[0])
-    sum_w1_w2 = np.add(w1, w2)**2
+    Eqn6 /= (2.0 * training_data.shape[0])
+    sum_w1_w2 = np.sum(w1)**2 + np.sum(w2)**2
     obj_val = Eqn6 + lambdaval / 2.0 / train_data.shape[0] * sum_w1_w2
 
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
@@ -269,8 +268,8 @@ n_input = train_data.shape[1];
 #n_input = 500;
 
 # set the number of nodes in hidden unit (not including bias unit)
-n_hidden = 50;
-#n_hidden = 4;
+#n_hidden = 50;
+n_hidden = 4;
 
 # set the number of nodes in output unit
 n_class = 10;				
