@@ -206,9 +206,10 @@ def nnObjFunction(params, *args):
     #z.dot(w2) will create a matrix with each row an output vector related to the corresponding row in the hidden matrix
     #So, we will compute the dot product of z.w(2), then apply the sigmoid function to each of the calculated values
     z = np.c_[z, np.ones(z.shape[0])]
+    print ("z: " + str(z.shape))
     net_p = z.dot(np.transpose(w2))
     o = sigmoid(net_p)
-
+    print ("o: " + str(o.shape))
     #BEGIN BACK PROPOGATION:
     #####################################################################################################################
     # The first set of for loops determines the error of the weights associated with the output layer
@@ -229,6 +230,14 @@ def nnObjFunction(params, *args):
     obj_val = np.sum((truth_label - o) ** 2)
     obj_val /= (2*training_data.shape[0])
 
+       ###Gradient of w1###
+    #sum.shape = 60000 x j
+    sum = delta_l.dot(w2)
+    print ("sum: " + str(sum.shape))
+    step1 = -(1 - z)
+    step2 = z * z
+    step3 = sum * step2
+    
 #    J_2 = np.zeros(w2.shape[0], w2.shape[1])
 #    for l in range(0, o.shape[0]):
 
