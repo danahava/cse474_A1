@@ -107,10 +107,6 @@ def preprocess():
     train_data = train_data[ perm[0: TEST_DATA_SIZE], :]
     train_label = train_label[ perm[0: TEST_DATA_SIZE], :]
 
-    #print("Valid: %s, %s" % (validation_data.shape, validation_label.shape))
-    #print("Train: %s, %s" % (train_data.shape, train_label.shape))
-    #print("Test: %s, %s" % (test_data.shape, test_label.shape))
-
     return train_data, train_label, validation_data, validation_label, test_data, test_label
 
 def nnObjFunction(params, *args):
@@ -152,7 +148,6 @@ def nnObjFunction(params, *args):
     %     layer to unit i in output layer."""
 
     n_input, n_hidden, n_class, training_data, training_label, lambdaval = args
-
     w1 = params[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0  
@@ -163,7 +158,7 @@ def nnObjFunction(params, *args):
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
     #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
     training_data = np.c_[training_data, np.ones(training_data.shape[0])]
-    a = train_data.dot(np.transpose(w1))
+    a = training_data.dot(np.transpose(w1))
     z = sigmoid(a)
 
     ######################################################################################################################
@@ -186,24 +181,23 @@ def nnObjFunction(params, *args):
     delta_l = (truth_label - o) * (1.0 - o) * o
     J_2 = -(np.transpose(delta_l).dot(z))
     ### Equation 16 ####
-    grad_w2 = (np.add((lambdaval * w_2), J_2)) / training_data.shape[0]
+    grad_w2 = (np.add((lambdaval * w2), J_2)) / training_data.shape[0]
 
        ###Gradient of w1###
     #sum.shape = 60000 x j
     sum_w1 = delta_l.dot(w2)
-    print ("sum: " + str(sum_w1.shape))
     step1 = -(1.0 - z)
     step2 = step1 * z
     step3 = sum_w1 * step2
     J_1 = (np.transpose(step3[:, 0:n_hidden]).dot(training_data))
-    grad_w1 = (np.add((lambdaval * w_1), J_1)) / training_data.shape[0]
+    grad_w1 = (np.add((lambdaval * w1), J_1)) / training_data.shape[0]
 
     ###Equation 15###
                
     Eqn6 = np.sum((truth_label - o) ** 2)
     Eqn6 /= (2.0 * training_data.shape[0])
     sum_w1_w2 = np.sum(w1)**2 + np.sum(w2)**2
-    obj_val = Eqn6 + lambdaval / 2.0 / train_data.shape[0] * sum_w1_w2
+    obj_val = Eqn6 + lambdaval / 2.0 / training_data.shape[0] * sum_w1_w2
 
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
@@ -265,11 +259,9 @@ train_data, train_label, validation_data,validation_label, test_data, test_label
 
 # set the number of nodes in input unit (not including bias unit)
 n_input = train_data.shape[1]; 
-#n_input = 500;
 
 # set the number of nodes in hidden unit (not including bias unit)
-#n_hidden = 50;
-n_hidden = 4;
+n_hidden = 10;
 
 # set the number of nodes in output unit
 n_class = 10;				
