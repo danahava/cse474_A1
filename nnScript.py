@@ -158,40 +158,6 @@ def nnObjFunction(params, *args):
     obj_val = 0  
 
 
-    """  Value of Error Function to use as output obj_var  """
-
-    # Total Error for entire training set given by equation
-    # 1   n   1   k               2
-    # -  SUM  -  SUM (Y   -  O  )               (6 FROM PROJECT DESCRIPTION)
-    # n  p=1  2  l=1   pl     pl
-    #
-    # where
-    # n = n_input+1         (total input plus 1 for bias)
-    # k = 10                (digits 0-9)
-    # Ypl = training_label  (lth target value)
-    # Opl = training_data   (output at lth node for pth example)
-    #
-    # For Regularization add to above equation
-    # lambda   m   d+1      2     k   m+1       2
-    # ------ (SUM  SUM (w1 )  +  SUM  SUM (W2  ) )      (COMBINE WITH 6 TO GET 15 IN PROJECT DESCRIPTION)
-    #   2n    j=1  i=1   ji      l=1  j=1    lj
-    #
-    # where
-    # n = n_input+1
-    # m = n_hidden+1    (number nodes in hidden layer plus bias)
-    # d+1 = n_input+1   (number of inputs plus bias)
-    # w1ji = w1 at jith position
-    # k = 10            (digits 0-9)
-    # m+1 = n_hidden+1  (noded in hidden layer plus bias)
-    #
-    # adding results from these two equations using these variables should give us the output
-    # to return for obj_val
-
-    """ ************************************************** """
-
-
-
-
     #BEGIN FEED FORWARD PROCESS:
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
@@ -219,27 +185,26 @@ def nnObjFunction(params, *args):
 	###Gradient of w2###
     truth_label = np.zeros((o.shape[0], o.shape[1]))
     for input in range(0, train_data.shape[0]):
-            truth_label[input, int(train_label[input])] = 1
+            truth_label[input, int(train_label[input])] = 1.0
 
-    delta_l = (truth_label - o) * (1 - o) * o
-    grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/train_data.shape[0])
-    regul_w2 = (lambdaval/(2*train_data.shape[0]))*(w2 ** 2)
-    grad_w2 += regul_w2
+    delta_l = (truth_label - o) * (1.0 - o) * o
+    grad_w2 = (-1.0*((np.transpose(delta_l)).dot(z))
 
        ###Gradient of w1###
     #sum.shape = 60000 x j
     sum = delta_l.dot(w2)
     print ("sum: " + str(sum.shape))
-    step1 = -(1 - z)
+    step1 = -(1.0 - z)
     step2 = step1 * z
     step3 = sum * step2
-    grad_w1 = (np.transpose(step3).train_data)/train_data.shape[0]
-    regul_w1 = (lambdaval/(2*train_data.shape[0]))*(w1 ** 2)
-    grad_w1 += regul_w1
+    grad_w1 = (np.transpose(step3).train_data)
 
     ###Equation 15###
-    obj_val = np.sum((truth_label - o) ** 2)
-    obj_val /= (2*train_data.shape[0])
+               
+    Eqn6 = np.sum((truth_label - o) ** 2)
+    Eqn6 /= (2*train_data.shape[0])
+    sum_w1_w2 = np.add(w1, w2)**2
+    obj_val = Eqn6 + lambdaval / 2.0 / train_data.shape[0] * sum_w1_w2
 
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
