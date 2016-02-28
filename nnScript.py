@@ -3,6 +3,7 @@ from scipy.optimize import minimize
 from scipy.io import loadmat
 from math import sqrt
 from time import strftime
+import pickle
 
 def initializeWeights(n_in,n_out):
     """
@@ -305,5 +306,7 @@ print('\n Validation set Accuracy:' + str(100*np.mean((predicted_label == valida
 #find the accuracy on Validation Dataset
 predicted_label = nnPredict(w1,w2,test_data)
 print('\n Test set Accuracy:' + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
+dictionary = (n_hidden, w1, w2, lambdaval)
+pickle.dump(dictionary, open("params.pickle", "wb"))
 
 print('\nEnd Time: ' + strftime("%Y-%m-%d %H:%M:%S"))
