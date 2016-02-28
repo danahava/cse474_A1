@@ -196,10 +196,10 @@ def nnObjFunction(params, *args):
     #####################################################################################################################
     #data.dot(w1) will create a matrix with each row a hidden vector related to the corresponding row in the input matrix
     #So, we will compute the dot product of data.w(1), then apply the sigmoid function to each of the calulated values
-    training_data = np.c_[training_data, np.ones(training_data.shape[0])]
-    print ("training_data: " + str(training_data.shape))
+    train_data = np.c_[train_data, np.ones(train_data.shape[0])]
+    print ("train_data: " + str(train_data.shape))
     print ("w1: " + str(w1.shape))
-    a = training_data.dot(np.transpose(w1))
+    a = train_data.dot(np.transpose(w1))
     z = sigmoid(a)
 
     ######################################################################################################################
@@ -218,66 +218,28 @@ def nnObjFunction(params, *args):
 
 	###Gradient of w2###
     truth_label = np.zeros((o.shape[0], o.shape[1]))
-    for input in range(0, training_data.shape[0]):
+    for input in range(0, train_data.shape[0]):
             truth_label[input, int(train_label[input])] = 1
 
     delta_l = (truth_label - o) * (1 - o) * o
     grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/train_data.shape[0])
-    regul_w2 = (lambdaval/(2*training_data.shape[0]))*(w2 ** 2)
+    regul_w2 = (lambdaval/(2*train_data.shape[0]))*(w2 ** 2)
     grad_w2 += regul_w2
-
-    ###Error value###
-    obj_val = np.sum((truth_label - o) ** 2)
-    obj_val /= (2*training_data.shape[0])
 
        ###Gradient of w1###
     #sum.shape = 60000 x j
     sum = delta_l.dot(w2)
     print ("sum: " + str(sum.shape))
     step1 = -(1 - z)
-    step2 = z * z
+    step2 = step1 * z
     step3 = sum * step2
-    
-#    J_2 = np.zeros(w2.shape[0], w2.shape[1])
-#    for l in range(0, o.shape[0]):
+    grad_w1 = (np.transpose(step3).train_data)/train_data.shape[0]
+    regul_w1 = (lambdaval/(2*train_data.shape[0]))*(w1 ** 2)
+    grad_w1 += regul_w1
 
-#        delta_l = (training_label[l] - o[l]) * (1 - o[l]) * o[l]
-
-#        grad_w2 = (-1*((np.transpose(delta_l)).dot(z))/o.shape[0]) + lambdaval*w2
-
-    #####################################################################################################################
-    # The second set of for loops determines the error of the weights associated with the hidden layer
-    # Error for weights between hidden and input
-    # NOTE: lambda is directly incorporated into the calculation for the error!!!!!!!!!!!!!!!!
-    """This still needs to be defined"""
-    #J_1 =
-#	grad_w1 = np.empty((n_hidden, (n_input+1)))
-
-    """ Gradient of Error function to use for output obj_grad  """
-
-    # Derivative of error function with respect to weight to get gradient
-    #              k
-    # -(1-z )z  ( SUM delta  w2  ) x        (12 FROM PROJECT DESCRIPTION)
-    #      j  j   l=1      l   lj   i
-    #
-    # where
-    # z = sigmoid(aj)   (sigmoid at jth position, like feed forward)
-    # k = 10            (digits 0-9)
-    # delta = delta l   (from back prop above)
-    # w2 = w2
-    # x = input         (at ith position)
-    #
-    # using derivative of error function can calculate gradient of error
-    #    1  n
-    # =  - SUM  Gradient for each pth node   (13 FROM PROJECT DESCRIPTION)
-    #    n p=1
-    #
-    # where n = n_input     (number inputs)
-    #
-    # Summing gradients of each node will give us vector to use for obj_grad output
-
-    """ ******************************************************** """
-
+    ###Equation 15###
+    obj_val = np.sum((truth_label - o) ** 2)
+    obj_val /= (2*train_data.shape[0])
 
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
