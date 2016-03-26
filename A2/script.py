@@ -41,9 +41,10 @@ def ldaTest(means,covmat,Xtest,ytest):
     # ytest - a N x 1 column vector indicating the labels for each test example
     # Outputs
     # acc - A scalar accuracy value
-    
+    # ypred - N x 1 column vector indicating the predicted labels
+
     # IMPLEMENT THIS METHOD
-    return acc
+    return acc,ypred
 
 def qdaTest(means,covmats,Xtest,ytest):
     # Inputs
@@ -52,9 +53,10 @@ def qdaTest(means,covmats,Xtest,ytest):
     # ytest - a N x 1 column vector indicating the labels for each test example
     # Outputs
     # acc - A scalar accuracy value
-    
+    # ypred - N x 1 column vector indicating the predicted labels
+
     # IMPLEMENT THIS METHOD
-    return acc
+    return acc,ypred
 
 def learnOLERegression(X,y):
     # Inputs:                                                         
@@ -65,7 +67,7 @@ def learnOLERegression(X,y):
     # IMPLEMENT THIS METHOD                                                   
     return w
 
-def learnRidgeERegression(X,y,lambd):
+def learnRidgeRegression(X,y,lambd):
     # Inputs:
     # X = N x d                                                               
     # y = N x 1 
